@@ -1,7 +1,7 @@
 import { useEffect} from 'react';
 import { ethers } from 'ethers';
 import TOKEN_ABI from '../abis/Token.json';
-//import EXCHANGE_ABI from '../abis/Exchange.json';
+import EXCHANGE_ABI from '../abis/Exchange.json';
 import '../App.css';
 import config from '../config.json';
 
@@ -10,7 +10,6 @@ function App() {
 
   const loadBlockchainData = async () => {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-    console.log(accounts[0])
 
     // Connect Ethers to blockchain
     const provider = new ethers.providers.Web3Provider(window.ethereum)
