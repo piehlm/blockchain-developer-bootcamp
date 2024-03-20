@@ -1,27 +1,32 @@
 import { useEffect} from 'react';
 import { useDispatch } from 'react-redux';
 import config from '../config.json';
-import EXCHANGE_ABI from '../abis/Exchange.json';
 
 import { 
   loadProvider, 
   loadNetwork, 
   loadAccount,
-  loadToken
+  loadTokens,
+  loadExchange
 } from '../store/interactions'
 
 function App() {
   const dispatch = useDispatch()
 
   const loadBlockchainData = async () => {
-    await loadAccount(dispatch)
-
     // Connect Ethers to blockchain
     const provider = loadProvider(dispatch)
     const chainId = await loadNetwork(provider, dispatch)
 
+    await loadAccount(provider, dispatch)
+
     //Token Smart Contract
-    await loadToken(provider, config[chainId].Dapp.address, dispatch)
+    const Dapp = config[chainId].Dapp
+    const mETH = config[chainId].mETH
+    const exchange = config[chainId].exchange
+    await loadTokens(provider, [Dapp.address, mETH.address], dispatch)
+
+    await loadExchange(provider, exchange.address, dispatch)
   }
 
   useEffect(() => {
