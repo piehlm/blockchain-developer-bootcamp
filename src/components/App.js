@@ -8,13 +8,15 @@ import {
   loadAccount,
   loadTokens,
   loadExchange,
-  subscribeToEvents
+  subscribeToEvents,
+  loadAllOrders
 } from '../store/interactions'
 
 import Navbar from './Navbar';
 import Markets from './Markets';
 import Balance from './Balance';
 import Order from './Order';
+import OrderBook from './OrderBook';
 
 function App() {
   const dispatch = useDispatch()
@@ -32,14 +34,19 @@ function App() {
       loadAccount(provider, dispatch)      
     })
 
-    //Token Smart Contract
+    //Load Token Smart Contract
     const Dapp = config[chainId].Dapp
     const mETH = config[chainId].mETH
+
+    // load exchange smart contract
     const exchangeConfig = config[chainId].exchange
     await loadTokens(provider, [Dapp.address, mETH.address], dispatch)
 
     const exchange = await loadExchange(provider, exchangeConfig.address, dispatch)
+    // fetch all orders: open, filled, cancelled
+    loadAllOrders(provider, exchange, dispatch)
 
+    //Listen to events
     subscribeToEvents(exchange, dispatch)
   }
 
@@ -70,7 +77,7 @@ function App() {
 
           {/* Trades */}
 
-          {/* OrderBook */}
+          <OrderBook />
 
         </section>
       </main>
