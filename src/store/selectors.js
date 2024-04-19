@@ -151,6 +151,58 @@ const tokenPriceClass = (tokenPrice, orderId, previousOrder) => {
 	}
 }
 
+//My Filled Orders
+export const myFilledOrdersSelector = createSelector(
+	account,
+	tokens,
+	filledOrders,
+	(account, tokens, orders) => {
+		if (!tokens[0] || !tokens[1]) { return }
+
+		orders = orders.filter((o) => o.user === account || o.creator === account)
+
+		// filter orders by selected tokens
+		orders = orders.filter((o) => o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address)
+		orders = orders.filter((o) => o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address)
+
+		// sort orders by time descending
+		orders = orders.sort((a, b) => b.timestamp - a.timestamp)		
+
+		// decorate orders
+		orders = decorateMyFilledOrders(orders, account, tokens)
+
+		return orders
+	}
+)
+
+const decorateMyFilledOrders = (orders, account, tokens) => {
+	return(
+		orders.map((order) => {
+			order = decorateOrder(order, tokens)
+			order = decorateMyFilledOrder(order, account, tokens)
+			return(order)
+		})
+	)
+}
+
+const decorateMyFilledOrder = (order, account, tokens) => {
+	const myOrder = order.creator === account
+
+	let orderType
+	if(myOrder) {
+		orderType = order.tokenGive === tokens[1].address ? 'buy' : 'sell'
+	} else {
+		orderType = order.tokenGive === tokens[1].address ? 'sell' : 'buy'
+	}
+
+	return({
+		...order,
+		orderType,
+		orderClass: (orderType === 'buy' ? GREEN : RED),
+		orderSign: (orderType === 'buy' ? '+' : '-')
+	})
+}
+
 //Order Book
 export const orderBookSelector = createSelector(
 	openOrders, 
