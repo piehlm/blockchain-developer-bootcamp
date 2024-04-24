@@ -17,6 +17,7 @@ const Navbar = () => {
 		await loadAccount(provider, dispatch)
 	}
 	const networkHandler = async (e) => {
+		console.log(chainId)
 		await window.ethereum.request({
 			method: 'wallet_switchEthereumChain',
 			params: [{ chainId: e.target.value }]
