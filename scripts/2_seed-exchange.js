@@ -36,16 +36,9 @@ async function main() {
 	result = await transaction.wait()
 	console.log(`Transferred: ${amount} tokens from ${sender.address} to ${receiver.address}\n`)
 
-	// user1 transfers 10,000 mETH
-	let transaction, result
-	transaction = await mETH.connect(sender).transfer(receiver2.address, amount)
-	result = await transaction.wait()
-	console.log(`Transferred: ${amount} tokens from ${sender.address} to ${receiver2.address}\n`)
-
 	// setup exchange users
 	const user1 = accounts[0]
 	const user2 = accounts[1]
-	const user3 = accounts[2]
 
 	//user 1 approves 10,000 Dapp...
 	transaction = await Dapp.connect(user1).approve(exchange.address, amount)
@@ -64,24 +57,6 @@ async function main() {
 	transaction = await exchange.connect(user2).depositToken(mETH.address, amount)
 	result = await transaction.wait()
 	console.log(`Deposited: ${amount} mETH from ${user2.address}\n`)
-
-	//user 3 approves 10,000 Dapp...
-	transaction = await Dapp.connect(user3).approve(exchange.address, amount)
-	result = await transaction.wait()
-	console.log(`Approved: ${amount} DAPP from ${user3.address}\n`)
-	//user 3 deposits 10,000 Dapp...
-	transaction = await exchange.connect(user3).depositToken(Dapp.address, amount)
-	result = await transaction.wait()
-	console.log(`Deposited: ${amount} DAPP from ${user3.address}\n`)
-
-	//user 3 approves 10,000 mETH...
-	transaction = await mETH.connect(user3).approve(exchange.address, amount)
-	result = await transaction.wait()
-	console.log(`Approved: ${amount} mETH from ${user3.address}\n`)
-	//user 3 deposits 10,000 mETH...
-	transaction = await exchange.connect(user3).depositToken(mETH.address, amount)
-	result = await transaction.wait()
-	console.log(`Deposited: ${amount} mETH from ${user3.address}\n`)
 
 	// Seed a Cancelled Order
 	let orderId
@@ -125,7 +100,7 @@ async function main() {
 	await wait(1)
 
 	// Seed Open Orders
-	// Users - make 10 orders
+	// User - make 10 orders
 	for (let i = 1; i <= 10; i++) {
 		transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(10 * i), Dapp.address, tokens(10))		
 		result = await transaction.wait()
